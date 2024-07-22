@@ -1,0 +1,51 @@
+﻿@{
+    // Sets the title of the page to "Home Page"
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>MVC Core Socket.IO</h2>
+
+<!-- Form for sending a message to the server via POST request -->
+<form id="messageForm" asp-action="SendMessage" method="post">
+    <!-- Hidden input field to send a default message value of "true" -->
+    <input type="hidden" name="message" value="true" />
+    <!-- Submit button to trigger the form submission -->
+    <button id="button" type="submit">Start</button>
+</form>
+
+<!-- Script to include the Socket.IO client library -->
+<script src="./js/socket.io-client.js"></script>
+<script>
+    let socket;
+    let button = document.getElementById('button'); // Reference to the submit button
+    let form = document.getElementById('messageForm'); // Reference to the form
+
+    // Initialize the Socket.IO client and connect to the server
+    socket = io('http://localhost:4000');
+
+    // Event handler for receiving messages from the Socket.IO server
+    socket.on('message', function (message) {
+        console.log(message); // Log the received message to the console
+
+        // Update the button text and state based on the received message
+        if (message === 'true') {
+            button.innerText = "Stop"; // Change button text to "Stop"
+            button.disabled = false; // Ensure button is enabled when in "Start" mode
+        } else {
+            button.innerText = "Start"; // Change button text to "Start"
+            button.disabled = true;  // Disable button when in "Stop" mode
+        }
+    });
+
+    // Event handler for form submission
+    form.addEventListener('submit', function (event) {
+        // Prevent form submission if the button text is "Stop"
+        if (button.innerText === "Stop") {
+            event.preventDefault(); // Prevent the form from submitting
+            alert("Cannot send message while in 'Stop' mode."); // Show an alert message
+        } else {
+            // Optional: Uncomment the following line if you want to manually reload the page
+            // window.location.reload();
+        }
+    });
+</script>
